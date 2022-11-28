@@ -16,7 +16,6 @@
 
 
 # Imports:
-
 #!pip install transformers requests beautifulsoup4 pandas numpy
 #!pip install matplotlib
 
@@ -97,13 +96,26 @@ print(f'Sentiment value:', sentiment)
 # Real reviews:
 # To extract real reviews from a website that has a review section, RegEx will be needed.
 
-extractor = requests.get('https://www.yelp.com/biz/tatos-mexican-grill-and-cantina-manteca-2?osq=Los+3+amigos')
-parser = BeautifulSoup(extractor.text, 'html.parser')
+links = []
+reviews =[]
+results =[]
 
-# Pass RegEx (full-stop, asterisk, comment, fullstop, asterisk) through parser (BeautifulSoup):
-regex = re.compile('.*comment*')          # <-- Looking for anything that has a comment within class (review, html file)
+for i in range(0, 13):
+    page = i * 10
+    url = 'https://www.yelp.com/biz/in-shape-manteca-manteca-3?osq=Gyms&start=' + str(page) + '&sort_by=date_asc'
+    links.append(url)
+links.reverse()
+print(links)
 
-results = parser.find_all('p', {'class':regex}) # 'p' means paragraph.. <p class="comment__"...>
+for i in range(len(links)):
+    url = links[i]
+    extractor = requests.get(url)
+    parser = BeautifulSoup(extractor.text, 'html.parser')
+
+    # Pass RegEx (full-stop, asterisk, comment, fullstop, asterisk) through parser (BeautifulSoup):
+    regex = re.compile('.*comment*')          # <-- Looking for anything that has a comment within class (review, html file)
+
+    results += parser.find_all('p', {'class':regex}) # 'p' means paragraph.. <p class="comment__"...>
 reviews = [result.text for result in results]
 
 
@@ -119,7 +131,6 @@ extractor.text
 
 
 # Test results:
-
 results[0].text
 
 
@@ -129,8 +140,8 @@ results[0].text
 # Load reviews into dataframe and score:
 # Scrape each and every review and score them!
 
-dataf = pd.DataFrame(np.array(reviews), columns=['review']) # <-- Makes it easier to go through the reviews and process them.
-
+dataf = pd.DataFrame(np.array(reviews), columns=['Review']) # <-- Makes it easier to go through the reviews and process them.
+dataf
 
 # In[14]:
 
@@ -149,7 +160,7 @@ dataf.tail()
 # In[22]:
 
 
-dataf['review'].iloc[5]
+dataf['Review'].iloc[5]
 
 
 # In[23]:
@@ -168,7 +179,7 @@ def sentiment_analysis(review):
 
 # Test the function:
 
-sentiment_analysis(dataf['review'].iloc[0])
+sentiment_analysis(dataf['Review'].iloc[0])
 
 
 # In[19]:
@@ -177,25 +188,19 @@ sentiment_analysis(dataf['review'].iloc[0])
 # As a final step, use lambda function to go through all the reviews in the dataframe, and store them in 'review' column:
 # NLP pipeline has a limit of how much text you can pass through it. It will take the first 1024 tokens of each review.
 
-dataf['Sentiment score (1 - 5)'] = dataf['review'].apply(lambda x: sentiment_analysis(x[:1024]))
+dataf['Score (1 - 5)'] = dataf['Review'].apply(lambda x: sentiment_analysis(x[:1024]))
 dataf
 
 
 # In[20]:
 
 
-plt.figure(figsize = (15, 10))
+plt.figure(figsize = (30, 15))
 plt.title("Sentiment Analysis (on a scale from 1 to 5)", fontsize = 20)
-plt.plot(dataf['review'].apply(lambda x: sentiment_analysis(x[:1024])), color = 'red', linestyle = "-.", label = "Sentiment score")
+plt.plot(dataf['Score (1 - 5)'], color = 'red', marker = "o", label = "Sentiment score")
 plt.legend(loc = "lower right", fontsize = 12)
-plt.xticks(range(0, len(dataf['review'].apply(lambda x: sentiment_analysis(x[:1024])))))
+#plt.xticks(range(0, len(dataf['Review'].apply(lambda x: sentiment_analysis(x[:1024])))))
 plt.xlabel("Review #", fontsize = 16)
 plt.ylabel("Score", fontsize = 16)
+plt.grid(True)
 plt.show()
-
-
-# In[ ]:
-
-
-
-
