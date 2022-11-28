@@ -104,10 +104,3 @@ for i in range(1, 11, 1):
 
 # Interestingly, overtime the population of Sacramento tends to stay in the city. The chances of moving to the suburbs diminish.
 # Commuters decrease goig to the suburbs, and drive to the city instead.
-
-
-# In[ ]:
-
-
-
-
