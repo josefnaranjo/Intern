@@ -104,7 +104,7 @@ for i in range(0, 13):
     page = i * 10
     url = 'https://www.yelp.com/biz/in-shape-manteca-manteca-3?osq=Gyms&start=' + str(page) + '&sort_by=date_asc'
     links.append(url)
-links.reverse()
+#links.reverse()
 print(links)
 
 for i in range(len(links)):
@@ -195,7 +195,7 @@ dataf
 # In[20]:
 
 
-plt.figure(figsize = (30, 15))
+plt.figure(figsize = (40, 3))
 plt.title("Sentiment Analysis (on a scale from 1 to 5)", fontsize = 20)
 plt.plot(dataf['Score (1 - 5)'], color = 'red', marker = "o", label = "Sentiment score")
 plt.legend(loc = "lower right", fontsize = 12)
